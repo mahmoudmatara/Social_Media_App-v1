@@ -84,6 +84,8 @@ export class UserService {
       username: user.username,
       image: user.image,
       coverImage: user.coverImage,
+      gender: user.gender,
+      createdAt: user.createdAt?.toString(),
     };
   }
 }
