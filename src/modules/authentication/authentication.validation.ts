@@ -38,7 +38,7 @@ export const signupValidation = (lang: LanguageEnum) => {
   });
 };
 
-export const confirmEmail = (lang: LanguageEnum) => {
+export const confirmEmailValidation = (lang: LanguageEnum) => {
   return z.object({
     body: z.strictObject({
       email: generalValidationFields.email(lang),
@@ -47,10 +47,39 @@ export const confirmEmail = (lang: LanguageEnum) => {
   });
 };
 
-export const resendConfirmEmail = (lang: LanguageEnum) => {
+export const resendConfirmEmailValidation = (lang: LanguageEnum) => {
   return z.object({
     body: z.strictObject({
       email: generalValidationFields.email(lang),
     }),
+  });
+};
+
+export const forgotPasswordValidation = (lang: LanguageEnum) => {
+  return z.object({
+    body: z.strictObject({
+      email: generalValidationFields.email(lang),
+    }),
+  });
+};
+
+export const resetPasswordValidation = (lang: LanguageEnum) => {
+  return z.object({
+    body: z
+      .strictObject({
+        email: generalValidationFields.email(lang),
+        otp: generalValidationFields.otp(lang),
+        password: generalValidationFields.password(lang),
+        confirmPassword: generalValidationFields.password(lang),
+      })
+      .superRefine((data, ctx) => {
+        generalValidationFields.matchField({
+          original: "password",
+          copy: "confirmPassword",
+          data,
+          ctx,
+          lang,
+        });
+      }),
   });
 };

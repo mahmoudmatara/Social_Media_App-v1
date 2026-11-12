@@ -70,5 +70,16 @@ userSchema
     return `${this.firstName} ${this.lastName}`;
   });
 
+// userSchema.pre("validate", function () {
+//   console.log("PRE_VALIDATE");
+//   if (this.provider == ProviderEnum.GOOGLE && this.password) {
+//     throw new Error("Invalid google account");
+//   }
+// });
+// userSchema.post("validate", function (doc) {
+//   console.log("POST_VALIDATE");
+//   console.log(doc);
+// });
+
 export const UserModel = mongoose.model<IUser>("User", userSchema);
 export type HydratedUser = HydratedDocument<IUser>;
