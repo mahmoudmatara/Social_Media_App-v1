@@ -7,6 +7,7 @@ const loginBodySchema = (lang: LanguageEnum) => {
   return z.strictObject({
     email: generalValidationFields.email(lang),
     password: generalValidationFields.password(lang),
+    FCM: z.string().optional(),
   });
 };
 

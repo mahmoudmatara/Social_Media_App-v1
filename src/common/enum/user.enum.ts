@@ -12,3 +12,8 @@ export enum ProviderEnum {
   SYSTEM = "system",
   GOOGLE = "google",
 }
+
+export enum StatusEnum {
+  ARCHIVE = "archive",
+  ACTIVE = "active",
+}

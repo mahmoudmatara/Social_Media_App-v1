@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { UserRepository } from "../repository";
-import cacheService, { CacheService } from "./cache.service";
+import { cacheService, CacheService } from "./cache.service";
 import {
   ACCESS_ADMIN_TOKEN_SIGNATURE,
   ACCESS_TOKEN_EXPIRES_IN,

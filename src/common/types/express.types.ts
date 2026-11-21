@@ -8,3 +8,4 @@ declare module "express-serve-static-core" {
     payload: JwtPayloadType;
   }
 }
+export type IFile = Express.Multer.File;

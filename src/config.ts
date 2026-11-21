@@ -26,3 +26,8 @@ export const APP_PASSWORD: string = process.env.APP_PASSWORD as string;
 
 export const ACCESS_TOKEN_EXPIRES_IN: number = parseInt(process.env.ACCESS_TOKEN_EXPIRES_IN ?? "1800");
 export const REFRESH_TOKEN_EXPIRES_IN: number = parseInt(process.env.REFRESH_TOKEN_EXPIRES_IN ?? "31536000");
+
+export const BUCKET: string = process.env.BUCKET as string;
+export const REGION: string = process.env.REGION as string;
+export const AWS_S3_ACCESS_KEY_ID: string = process.env.AWS_S3_ACCESS_KEY_ID as string;
+export const AWS_S3_SECRET_KEY: string = process.env.AWS_S3_SECRET_KEY as string;

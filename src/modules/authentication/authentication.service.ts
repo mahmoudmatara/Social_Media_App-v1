@@ -3,7 +3,7 @@ import { IUser } from "../../common/interface";
 import { HydratedUser } from "../../model";
 import { BadRequestException, ConflictException, NotFoundException } from "../../common/exception";
 import { UserRepository } from "./../../common/repository/user.repository";
-import cacheServiceInstance, { CacheService } from "../../common/service/cache.service";
+import { cacheService, CacheService } from "../../common/service/cache.service";
 import { compare, encryptionSecurity, hash } from "../../common/security";
 import { EmailSubjectEnum, ProviderEnum } from "../../common/enum";
 import { emailEvent, UserEmailKey, UserEmailTrailsKey } from "../../common/utils/email";
@@ -12,8 +12,10 @@ import { tokenService, TokenService } from "../../common/service";
 import { ILoginResponse } from "./entities/authentication.entities";
 import { OAuth2Client, TokenPayload } from "google-auth-library";
 import { WEB_CLIENT_IDS } from "../../config";
+import { notificationService, NotificationService } from "./../../common/service/notification.service";
 
 export class AuthenticationService {
+  private notificationService: NotificationService;
   private userRepository: UserRepository;
   private cacheService: CacheService;
   private tokenService: TokenService;
@@ -21,8 +23,9 @@ export class AuthenticationService {
   constructor() {
     console.log("in");
     this.userRepository = new UserRepository();
-    this.cacheService = cacheServiceInstance;
+    this.cacheService = cacheService;
     this.tokenService = tokenService;
+    this.notificationService = notificationService;
     this.clientService = new OAuth2Client();
   }
 
@@ -111,7 +114,7 @@ export class AuthenticationService {
     }
 
     const account: HydratedUser = await this.userRepository.createOne({
-      data: { username, email, phone: await encryptionSecurity(phone), gender, password: await hash(password) },
+      data: { username, email, phone, gender, password },
       options: { validateBeforeSave: true },
     });
     await this.sendEmailOtp({ email, subject: EmailSubjectEnum.CONFIRM_EMAIL });
@@ -154,7 +157,7 @@ export class AuthenticationService {
     return;
   }
 
-  async loginService({ email, password }: LoginDto, issuer: string): Promise<ILoginResponse> {
+  async loginService({ email, password, FCM }: LoginDto, issuer: string): Promise<ILoginResponse> {
     const account = await this.userRepository.findOne({
       filter: { email, provider: ProviderEnum.SYSTEM, confirmEmail: { $exists: true } },
     });
@@ -163,6 +166,17 @@ export class AuthenticationService {
 
     const match = await compare(password, account.password);
     if (!match) throw new NotFoundException("Invalid login data");
+
+    await this.notificationService.sendNotifications({
+      tokens: await this.notificationService.getFCMs({ userId: account._id }),
+      notification: { title: "LOGIN SESSION", body: "NEW LOGIN" },
+    });
+    if (FCM) {
+      await this.notificationService.addFCM({
+        userId: account._id,
+        FCM,
+      });
+    }
     return this.tokenService.createLoginCredentials({ user: account, issuer });
   }
 
